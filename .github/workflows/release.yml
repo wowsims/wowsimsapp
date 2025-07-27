@@ -23,7 +23,7 @@ jobs:
 
       - name: Extract Version
         id: extract_version
-        run: echo "VERSION=${{ github.ref_name#v }}" >> $GITHUB_ENV
+        run: echo "VERSION=${GITHUB_REF##*/}" | sed 's/^v//' >> $GITHUB_ENV
 
       - name: Restore Dependencies
         run: dotnet restore
