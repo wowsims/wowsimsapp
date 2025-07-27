@@ -61,4 +61,4 @@ jobs:
           body: |
             Automated release for WoW Sims Launcher.
             - Version: ${{ github.ref_name }}
-          artifacts: artifacts/WoWSimsApp.zip
+          artifacts: WoWSimsApp.zip
