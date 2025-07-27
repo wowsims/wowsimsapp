@@ -21,14 +21,18 @@ jobs:
         with:
           dotnet-version: '9.0.x' # Targeting .NET 9
 
+      - name: Extract Version
+        id: extract_version
+        run: echo "VERSION=${{ github.ref_name#v }}" >> $GITHUB_ENV
+
       - name: Restore Dependencies
         run: dotnet restore
 
       - name: Build Application
-        run: dotnet build --configuration Release -p:Version=${{ github.ref_name }}
+        run: dotnet build --configuration Release -p:Version=${{ env.VERSION }}
 
       - name: Publish Application
-        run: dotnet publish -c Release -o ./publish --self-contained -p:PublishSingleFile=true -p:Version=${{ github.ref_name }}
+        run: dotnet publish -c Release -o ./publish --self-contained -p:PublishSingleFile=true -p:Version=${{ env.VERSION }}
 
       - name: Archive Build Artifacts
         run: |
