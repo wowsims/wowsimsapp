@@ -25,10 +25,10 @@ jobs:
         run: dotnet restore
 
       - name: Build Application
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release -p:Version=${{ github.ref_name }}
 
       - name: Publish Application
-        run: dotnet publish -c Release -o ./publish --self-contained -p:PublishSingleFile=true
+        run: dotnet publish -c Release -o ./publish --self-contained -p:PublishSingleFile=true -p:Version=${{ github.ref_name }}
 
       - name: Archive Build Artifacts
         run: |
