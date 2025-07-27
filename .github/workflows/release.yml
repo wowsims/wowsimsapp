@@ -1,0 +1,64 @@
+name: Publish and Release WoW Sims Launcher
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags like v1.0.0
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x' # Targeting .NET 9
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build Application
+        run: dotnet build --configuration Release
+
+      - name: Publish Application
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Archive Build Artifacts
+        run: |
+          mkdir -p artifacts
+          tar -czf artifacts/WoWSimsLauncher.tar.gz -C ./publish .
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: WoWSimsLauncher
+          path: artifacts/WoWSimsLauncher.tar.gz
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: WoWSimsLauncher
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automated release for WoW Sims Launcher.
+            - Version: ${{ github.ref_name }}
+          artifacts: artifacts/WoWSimsLauncher.tar.gz
