@@ -23,10 +23,12 @@ jobs:
 
       - name: Extract Version
         id: extract_version
+        shell: powershell
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${VERSION#v}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          $ref = $env:GITHUB_REF
+          $version = $ref -replace 'refs/tags/', '' -replace '^v', ''
+          Write-Host "Extracted VERSION: $version"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
 
       - name: Restore Dependencies
         run: dotnet restore
