@@ -1,4 +1,4 @@
-name: Publish and Release WoW Sims Launcher
+name: Publish and Release WoW Sims App
 
 on:
   push:
@@ -26,18 +26,18 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish Application
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish -c Release -o ./publish --self-contained -p:PublishSingleFile=true
 
       - name: Archive Build Artifacts
         run: |
           mkdir -p artifacts
-          tar -czf artifacts/WoWSimsLauncher.tar.gz -C ./publish .
+          powershell Compress-Archive -Path ./publish/* -DestinationPath artifacts/WoWSimsApp.zip
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: WoWSimsLauncher
-          path: artifacts/WoWSimsLauncher.tar.gz
+          name: WoWSimsApp
+          path: artifacts/WoWSimsApp.zip
 
   release:
     name: Create GitHub Release
@@ -51,7 +51,7 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: WoWSimsLauncher
+          name: WoWSimsApp
 
       - name: Create Release
         uses: ncipollo/release-action@v1
@@ -61,4 +61,4 @@ jobs:
           body: |
             Automated release for WoW Sims Launcher.
             - Version: ${{ github.ref_name }}
-          artifacts: artifacts/WoWSimsLauncher.tar.gz
+          artifacts: artifacts/WoWSimsApp.zip
