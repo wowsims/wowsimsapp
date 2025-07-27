@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -47,6 +49,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
