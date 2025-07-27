@@ -1,4 +1,7 @@
-﻿using System.Net.NetworkInformation;
+﻿using Serilog;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Net.NetworkInformation;
 using System.Windows.Forms;
 
 namespace WoWSimsApp
@@ -13,6 +16,29 @@ namespace WoWSimsApp
 
 		public MainForm()
 		{
+			// Configure Serilog
+			Log.Logger = new LoggerConfiguration()
+				.WriteTo.File( "logs/app.log", rollingInterval: RollingInterval.Day )
+				.CreateLogger();
+
+			// Configure logging
+			var loggerFactory = LoggerFactory.Create( builder =>
+			{
+				builder.AddSerilog();
+			} );
+			var logger = loggerFactory.CreateLogger<MainForm>();
+
+			// Attach global exception handlers
+			AppDomain.CurrentDomain.UnhandledException += ( sender, args ) =>
+			{
+				logger.LogError( args.ExceptionObject as Exception, "Unhandled exception occurred" );
+			};
+
+			Application.ThreadException += ( sender, args ) =>
+			{
+				logger.LogError( args.Exception, "Thread exception occurred" );
+			};
+
 			// Check for internet connection
 			if (!IsInternetAvailable())
 			{
