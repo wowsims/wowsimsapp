@@ -1,6 +1,7 @@
-﻿using Serilog;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
 
@@ -18,7 +19,7 @@ namespace WoWSimsApp
 		{
 			// Configure Serilog
 			Log.Logger = new LoggerConfiguration()
-				.WriteTo.File( "logs/app.log", rollingInterval: RollingInterval.Day )
+				.WriteTo.File( Path.Combine( Application.LocalUserAppDataPath, "WoWSims", "logs", "app.log" ), rollingInterval: RollingInterval.Day )
 				.CreateLogger();
 
 			// Configure logging
